@@ -31,15 +31,15 @@
         init: function() {
             var _this = this;
 					
-			//Create the the div.
+            //Create the the div.
             $("#editor-bottom-bar").append('<div id="messaging" title="Send a message."><div class="divider"></div><a class="ico-wrapper"><span class="icon-chat"></span>Messaging</a></div>');
             
             //Hook the click event to show the active.check() message.
             $("#messaging").click(function() {
                 _this.create();
-			});
+            });
 			
-			//Timer to check for messages.
+            //Timer to check for messages.
             setInterval(function() {
                 _this.checkNew();
             }, _this.interval);
@@ -47,7 +47,7 @@
         
         //Show the form to create a new message.
         create: function() {
-			var _this = this;
+            var _this = this;
 
             //Show the modal form.
             codiad.modal.load(300, this.dialog + '?action=create');
@@ -83,34 +83,34 @@
         send: function(recipient, message) {
             var _this = this;
             
-			$.get(
-				_this.controller + "?action=send&recipient=" + recipient + "&message=" + message,
-				function(data) {
-					var /* Object */ responseData = codiad.jsend.parse(data);
-					
-					//Empty response data means success.
-					if(!responseData) {
-						codiad.message.success("Your message has been sent.");
-					}
-				}
-			);
+            $.get(
+                _this.controller + "?action=send&recipient=" + recipient + "&message=" + message,
+                function(data) {
+                    var /* Object */ responseData = codiad.jsend.parse(data);
+
+                    //Empty response data means success.
+                    if(!responseData) {
+                        codiad.message.success("Your message has been sent.");
+                    }
+                }
+            );
         },
 
         //Check for a new message.
         checkNew: function() {
             var _this = this;
 
-			$.get(
-				_this.controller + "?action=checknew",
-				function(data) {
-					var /* Object */ responseData = codiad.jsend.parse(data);
-					
-					if(responseData) {
+            $.get(
+                _this.controller + "?action=checknew",
+                function(data) {
+                    var /* Object */ responseData = codiad.jsend.parse(data);
+
+                    if(responseData) {
                         //Show the new message.
-						codiad.message.notice(responseData.sender + ": " + responseData.message);
-					}
-				}
-			);
-        },
+                        codiad.message.notice(responseData.sender + ": " + responseData.message);
+                    }
+                }
+            );
+        }
     };
 })(this, jQuery);

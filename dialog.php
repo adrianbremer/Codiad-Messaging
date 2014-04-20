@@ -27,7 +27,8 @@
         case 'create':
             $users = $Message->GetOtherUsers();
 ?>
-    <label><span class="icon-message"></span>Recipient</label>
+    <label><span class="icon-message"></span>New Message</label>
+    <label>Recipient</label>
     <select name="lst_recipient">
         <option value="">Select a recipient...</option>
         <?php foreach($users as $user): ?>
@@ -39,7 +40,7 @@
     <button class="btn-left">Send</button>
     <button class="btn-right" onclick="codiad.modal.unload(); return false;">Cancel</button>
 <?php
-        break;
+            break;
     }
 ?>
 </form>
