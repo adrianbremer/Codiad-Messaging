@@ -18,6 +18,7 @@
         public $sender		= '';
         public $recipient	= '';
         public $message         = '';
+        public $date            = '';
         public $is_read		= 0;
 
         //////////////////////////////////////////////////////////////////
@@ -38,9 +39,12 @@
         //////////////////////////////////////////////////////////////////
         // Create a message.
         //////////////////////////////////////////////////////////////////
-
         public function Create(){
-            /* Array */ $query = array('sender' => $this->sender, 'recipient' => $this->recipient, 'message' => $this->message, 'is_read' => 0);
+            //Set the message date.
+            $curDate = new DateTime();
+            $this->date = $curDate->format('Y-m-d H:i:s');
+
+            /* Array */ $query = array('sender' => $this->sender, 'recipient' => $this->recipient, 'message' => $this->message, 'date' => $this->date, 'is_read' => 0);
             /* Array */ $results = $this->getDB()->create($query, 'message');
 
             if ($results != null) {
@@ -51,11 +55,10 @@
         }
 
         //////////////////////////////////////////////////////////////////
-        // Create a message.
+        // Check for a new message.
         //////////////////////////////////////////////////////////////////
-
         public function CheckNew(){
-            /* Array */ $query = array('recipient' => $this->recipient, 'is_read' => 0, 'message' => "*", 'sender' => "*");
+            /* Array */ $query = array('recipient' => $this->recipient, 'is_read' => 0, 'message' => "*", 'sender' => "*", 'date' => "*");
             /* Array */ $results = $this->getDB()->select($query, 'message');
             /* Array */ $data = array();
 
@@ -63,7 +66,13 @@
                 /* Object */ $message = $results[0];
 
                 //Update the message.
-                /* Array */ $query = array('sender' => $message->get_field('sender'), 'recipient' => $message->get_field('recipient'), 'message' => $message->get_field('message'), 'is_read' => 1);
+                /* Array */ $query = array(
+                    'sender' => $message->get_field('sender'),
+                    'recipient' => $message->get_field('recipient'),
+                    'message' => $message->get_field('message'),
+                    'date' => $message->get_field('date'),
+                    'is_read' => 1
+                 );
 
                 //Workaround: file_db does not provide an update method, the entry must be deleted and re-inserted.
                 $message->remove();
@@ -78,16 +87,26 @@
         }
 
         //////////////////////////////////////////////////////////////////
+        // Get the message history.
+        //////////////////////////////////////////////////////////////////
+        public function GetHistory(){
+            /* Array */ $query = array('recipient' => $this->recipient, 'is_read' => "*", 'message' => "*", 'sender' => $this->sender, 'date' => '*');
+            /* Array */ $results = $this->getDB()->select($query, 'message');
+
+            //Prepare the return data.
+            return $results;
+        }
+
+        //////////////////////////////////////////////////////////////////
         // Get users other than the user in session.
         //////////////////////////////////////////////////////////////////
-
         public function GetOtherUsers(){
             /* Array */ $users = getJSON('users.php');
 
             //Remove the user in session.
             foreach($users as $key => $user) {
                 if($user['username'] == $_SESSION['user']){
-                    unset($users[$key]);
+                    //unset($users[$key]);
                     break;
                 }
             }

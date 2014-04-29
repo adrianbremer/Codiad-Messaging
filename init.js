@@ -13,6 +13,7 @@
 
     //Instantiate the plugin.
     $(function() {
+        $('head').append('<link rel="stylesheet" href="' + curpath + 'style.css" type="text/css" />');
         codiad.Messaging.init();
     });
 
@@ -30,6 +31,10 @@
         //Initialization function.
         init: function() {
             var _this = this;
+            
+            //Add the messaging div.
+            var html = "<div id='messaging-bar'><ul></ul></div>";
+            $(html).insertBefore("#editor-bottom-bar");
 
             //Timer to check for messages.
             setInterval(function() {
@@ -49,10 +54,44 @@
                 e.preventDefault();
                 var /* Boolean */ is_valid = true;
                 var /* String */ recipient = $(this).find('select[name="lst_recipient"]').val();
-                var /* String */ message = $(this).find('textarea[name="txt_message"]').val();
+                var /* String */ message = $(this).find('input[name="txt_message"]').val();
                 
                 //Check for recipient selection.
-                if(recipient.length === 0) {
+                if(recipient.trim().length === 0) {
+                    codiad.message.error("Error: A recipient must be selected.");
+                    is_valid = false;
+                }
+                
+                // Check for empty message.
+                if (message.trim().length === 0) {
+                    codiad.message.error("Error: Message can't be empty.");
+                    is_valid = false;
+                }
+                
+                if (is_valid) {
+                    //Send the message and close the modal form.
+                    _this.send(recipient, message);
+                    codiad.modal.unload();
+                }
+            });
+        },
+        
+        //Show the chat history.
+        history: function(sender) {
+            var _this = this;
+
+            //Show the modal form.
+            codiad.modal.load(500, this.dialog + '?action=history&sender=' + sender);
+            
+            //Hook the submit event.
+            $('#modal-content form').live('submit', function(e) {
+                e.preventDefault();
+                var /* Boolean */ is_valid = true;
+                var /* String */ recipient = $(this).find('input[name="hdn_recipient"]').val();
+                var /* String */ message = $(this).find('input[name="txt_message"]').val();
+                
+                //Check for recipient selection.
+                if(recipient.trim().length === 0) {
                     codiad.message.error("Error: A recipient must be selected.");
                     is_valid = false;
                 }
@@ -98,6 +137,31 @@
                     var /* Object */ responseData = codiad.jsend.parse(data);
 
                     if(responseData) {
+                        var id = "messaging-" + responseData.sender;
+                        
+                        //Check if there is a tab already open.
+                        var chatTab = $("#" + id);
+                        
+                        if(chatTab.length === 0) {
+                            //Display a new chat tab.
+                            var newLi = "<li id='" + id + "' class='tab-item changed'><a class='label'>" + responseData.sender + "<span class='icon-chat'></span></a><a class='close'>x</a></li>";
+                            $('#messaging-bar ul').append(newLi);
+                            chatTab = $("#" + id);
+                            
+                            //Add a click event to open the chat box.
+                            chatTab.find(".label").click(function() {
+                                chatTab.removeClass("changed");
+                                _this.history(responseData.sender);
+                            });
+                            
+                            //Add a click event to close the tab.
+                            chatTab.find(".close").click(function() {
+                                chatTab.remove();
+                            });
+                        } else {
+                            chatTab.addClass("changed");
+                        }
+                        
                         //Show the new message.
                         codiad.message.notice(responseData.sender + ": " + responseData.message);
                     }
