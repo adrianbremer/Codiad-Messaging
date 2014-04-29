@@ -30,15 +30,7 @@
         //Initialization function.
         init: function() {
             var _this = this;
-					
-            //Create the the div.
-            $("#editor-bottom-bar").append('<div id="messaging" title="Send a message."><div class="divider"></div><a class="ico-wrapper"><span class="icon-chat"></span>Messaging</a></div>');
-            
-            //Hook the click event to show the active.check() message.
-            $("#messaging").click(function() {
-                _this.create();
-            });
-			
+
             //Timer to check for messages.
             setInterval(function() {
                 _this.checkNew();

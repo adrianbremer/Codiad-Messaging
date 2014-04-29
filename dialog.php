@@ -27,7 +27,6 @@
         case 'create':
             $users = $Message->GetOtherUsers();
 ?>
-    <label><span class="icon-message"></span>New Message</label>
     <label>Recipient</label>
     <select name="lst_recipient">
         <option value="">Select a recipient...</option>
