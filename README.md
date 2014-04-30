@@ -1,4 +1,4 @@
-#File Use
+# Messaging
 This plugin allows users to send messages to other users. In order to use, click on the sidebar menu item to send a message; new messages will be shown as tabs at the bottom of the screen.
 
 # Installation
@@ -8,6 +8,6 @@ This plugin allows users to send messages to other users. In order to use, click
 
 # Future improvements (in order of development)
 
-- Groups
 - History deletion
 - Ability to always view history
+- Groups
