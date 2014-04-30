@@ -137,33 +137,50 @@
                     var /* Object */ responseData = codiad.jsend.parse(data);
 
                     if(responseData) {
-                        var id = "messaging-" + responseData.sender;
-                        
-                        //Check if there is a tab already open.
-                        var chatTab = $("#" + id);
-                        
-                        if(chatTab.length === 0) {
-                            //Display a new chat tab.
-                            var newLi = "<li id='" + id + "' class='tab-item changed'><a class='label'>" + responseData.sender + "<span class='icon-chat'></span></a><a class='close'>x</a></li>";
-                            $('#messaging-bar ul').append(newLi);
-                            chatTab = $("#" + id);
-                            
-                            //Add a click event to open the chat box.
-                            chatTab.find(".label").click(function() {
-                                chatTab.removeClass("changed");
-                                _this.history(responseData.sender);
-                            });
-                            
-                            //Add a click event to close the tab.
-                            chatTab.find(".close").click(function() {
-                                chatTab.remove();
-                            });
-                        } else {
-                            chatTab.addClass("changed");
-                        }
-                        
-                        //Show the new message.
-                        codiad.message.notice(responseData.sender + ": " + responseData.message);
+                        $.each(responseData.senders, function(sender, count) {
+                            var id = "messaging-" + sender;
+
+                            //Check if there is a tab already open.
+                            var chatTab = $("#" + id);
+
+                            if(chatTab.length === 0) {
+                                //Display a new chat tab.
+                                var newLi = "<li id='" + id + "' class='tab-item changed'><a class='label'><span class='icon-chat'></span>" + sender + "<span class='count'> (" + count + ")</span></a><a class='close'>x</a></li>";
+                                $('#messaging-bar ul').append(newLi);
+                                chatTab = $("#" + id);
+
+                                //Add a click event to open the chat box.
+                                chatTab.find(".label").click(function() {
+                                    chatTab.removeClass("changed");
+                                    chatTab.find(".count").text("");
+                                    _this.history(sender);
+                                });
+
+                                //Add a click event to close the tab.
+                                chatTab.find(".close").click(function() {
+                                    chatTab.remove();
+                                    _this.markAllRead(sender);
+                                });
+                            } else {
+                                chatTab.addClass("changed");
+                            }
+                        });
+                    }
+                }
+            );
+        },
+
+        //Mark all messages as read.
+        markAllRead: function(sender) {
+            var _this = this;
+
+            $.get(
+                _this.controller + "?action=markallread&sender=" + sender,
+                function(data) {
+                    var /* Object */ responseData = codiad.jsend.parse(data);
+
+                    if(responseData) {
+                        //Messages have been marked as read.
                     }
                 }
             );

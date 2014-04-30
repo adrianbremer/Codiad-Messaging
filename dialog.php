@@ -25,7 +25,7 @@
         // Create
         //////////////////////////////////////////////////////////////////
         case 'create':
-            $users = $Message->GetOtherUsers();
+            /* Array */ $users = $Message->GetOtherUsers();
 ?>
     <label>Recipient</label>
     <select name="lst_recipient">
@@ -44,16 +44,55 @@
         // History
         //////////////////////////////////////////////////////////////////
         case 'history':
+            //Get received messages.
             $Message->sender = $_GET['sender'];
             $Message->recipient = $_SESSION['user'];
-            $messages = $Message->GetHistory();
+            /* Array */ $messages = $Message->GetHistory();
+            
+            //Mark all messages as read.
+            $Message->MarkAllRead();
 ?>
     <label>Chat with <?php echo $_GET['sender']; ?></label>
     <div id="messaging-history-<?php echo $_GET['sender']; ?>" class="messaging-history">
 <?php
+            /* String */ $user = "";
+            /* String */ $date = ""; //Used to print the date on the last message.
+            
             foreach($messages as $message) {
-                echo $message->get_field('date') . ": " . $message->get_field('message') . "<br />";
+                /* String */ $html_before = "";
+                
+                //Create a separator between user "bubbles".
+                if($message['sender'] != $user) {
+                    //Establish the new user.
+                    $user = $message['sender'];
+                    
+                    //Print the date at the end of all messages.
+                    if(isset($date)) {
+                        $html_before .= "<div class='messaging-date'>" . $date . "</div></div>";
+                    }
+                    
+                    //Open the bubble.
+                    if($message['is_read']) {
+                        $html_before .= "<div class='messaging-message'>";
+                    } else {
+                        $html_before .= "<div class='messaging-message new'>";
+                    }
+                    
+                    //Print the username.
+                    $html_before .=  "<div class='messaging-user'>" . $message['sender'] . "</div>";
+                }
+                
+                //Print the prefixed HTML.
+                echo $html_before;
+                
+                //Print the message.
+                echo $message['message'] . "<br />";
+                
+                //Set the date variable.
+                $date = $message['date'];
             }
+            
+            echo "<div class='messaging-date'>" . $date . "</div></div>";
 ?>
     </div>
     <input type="text" name="txt_message" autofocus="autofocus" autocomplete="off" placeholder="Write a message..." />
