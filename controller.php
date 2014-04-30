@@ -25,7 +25,13 @@
         $Message->sender = $_SESSION['user'];
         $Message->recipient = $_GET['recipient'];
         $Message->message = $_GET['message'];
-        $Message->Create();
+        $results = $Message->Create();
+        
+        if ($results != null) {
+            echo formatJSEND("success");
+        } else {
+            echo formatJSEND("error", "Error: Your message could not be sent.");
+        }
     }
 
     //////////////////////////////////////////////////////////////////
@@ -34,6 +40,20 @@
 
     if($_GET['action']=='checknew'){
         $Message->recipient = $_SESSION['user'];
-        $Message->CheckNew();
+        $data = $Message->CheckNew();
+        
+        echo formatJSEND("success", $data);
+    }
+
+    //////////////////////////////////////////////////////////////////
+    // Mark all messages as read.
+    //////////////////////////////////////////////////////////////////
+
+    if($_GET['action']=='markallread'){
+        $Message->sender = $_GET['sender'];
+        $Message->recipient = $_SESSION['user'];
+        $Message->MarkAllRead();
+        
+        echo formatJSEND("success");
     }
 ?>
