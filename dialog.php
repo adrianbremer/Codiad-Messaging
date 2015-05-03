@@ -68,7 +68,7 @@
                     
                     //Print the date at the end of all messages.
                     if(isset($date)) {
-                        $html_before .= "<div class='messaging-date'>" . $date . "</div></div>";
+                        $html_before .= "<div class='messaging-date'>" . $date . "</div>";
                     }
                     
                     //Open the bubble.
