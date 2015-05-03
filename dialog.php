@@ -63,6 +63,10 @@
                 
                 //Create a separator between user "bubbles".
                 if($message['sender'] != $user) {
+                    //Close the previous bubble.
+                    if($user !== "") {
+                        $html_before .= "</div>";
+                    }
                     //Establish the new user.
                     $user = $message['sender'];
                     
