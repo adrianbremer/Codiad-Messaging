@@ -59,6 +59,7 @@
             /* Array */ $query = array('recipient' => $this->recipient, 'is_read' => 0, 'message' => "*", 'sender' => "*", 'date' => "*");
             /* Array */ $results = $this->getDB()->select($query, 'message');
             /* Array */ $senders = array();
+            /* Array */ $data = array();
 
             if ($results != null) {
                 foreach($results as $result) {
@@ -66,7 +67,6 @@
                 }
 
                 //Prepare the return data.
-                /* Array */ $data = array();
                 $data['senders'] = $senders;
             }
             
